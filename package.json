@@ -1,0 +1,17 @@
+{
+  "name": "taskflow-app",
+  "version": "1.0.0",
+  "description": "TaskFlow - Project & Task Management App",
+  "main": "server/server.js",
+  "scripts": {
+    "start": "node server/server.js",
+    "server": "cd server && npm start",
+    "client": "cd client && npm run dev",
+    "install-all": "npm install && cd server && npm install && cd ../client && npm install",
+    "build": "cd client && npm install && npm run build",
+    "railway-build": "npm install && cd server && npm install && cd ../client && npm install && npm run build"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
