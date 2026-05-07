@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "TaskFlow - Project & Task Management App",
   "main": "server/server.js",
+  "engines": {
+    "node": ">=20.19.0"
+  },
   "scripts": {
     "start": "node server/server.js",
     "server": "cd server && npm start",
