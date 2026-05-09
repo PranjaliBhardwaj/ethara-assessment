@@ -4,7 +4,16 @@ const helmet = require('helmet');
 const morgan = require('morgan');
 const path = require('path');
 const fs = require('fs');
-require('dotenv').config();
+// Load server/.env when started from repo root (`npm start`) or from server/
+require('dotenv').config({ path: path.join(__dirname, '.env') });
+
+if (!process.env.JWT_SECRET || String(process.env.JWT_SECRET).trim() === '') {
+  console.error(
+    '\n❌ JWT_SECRET is missing. Set it in Railway Variables (or server/.env locally).\n' +
+      '   Login and signup will fail until this is set — jsonwebtoken cannot sign without a secret.\n'
+  );
+  process.exit(1);
+}
 
 const connectDB = require('./config/db');
 const errorHandler = require('./middleware/errorHandler');
@@ -19,10 +28,9 @@ const app = express();
 
 // ─── Middleware ────────────────────────────────────────────
 app.use(helmet({ crossOriginResourcePolicy: false }));
-app.use(cors({
-  origin: process.env.CLIENT_URL || 'http://localhost:5173',
-  credentials: true,
-}));
+// Reflect the request Origin (works for Vite + API on different ports and for Railway monoliths).
+// Optional: restrict with CLIENT_URL in custom middleware if you expose the API to untrusted origins.
+app.use(cors({ origin: true, credentials: true }));
 app.use(morgan('dev'));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
