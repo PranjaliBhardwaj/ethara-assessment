@@ -3,6 +3,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
 const path = require('path');
+const fs = require('fs');
 require('dotenv').config();
 
 const connectDB = require('./config/db');
@@ -40,16 +41,16 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-// ─── Static Files (Production) ─────────────────────────────
-if (process.env.NODE_ENV === 'production') {
-  const distPath = path.join(__dirname, '..', 'client', 'dist');
+// ─── Static Files (deployed bundle: client/dist) ───────────
+// Serve the SPA whenever the Vite build exists. Relying only on NODE_ENV
+// breaks on hosts (e.g. Railway) that do not set NODE_ENV=production at runtime.
+const distPath = path.join(__dirname, '..', 'client', 'dist');
+const clientIndex = path.join(distPath, 'index.html');
+if (fs.existsSync(clientIndex)) {
   app.use(express.static(distPath));
-  
-  // Catch-all route to serve index.html for client-side routing
   app.get('*', (req, res, next) => {
-    // Only serve index.html if it's not an API route
-    if (req.url.startsWith('/api')) return next();
-    res.sendFile(path.join(distPath, 'index.html'));
+    if (req.path.startsWith('/api')) return next();
+    res.sendFile(clientIndex);
   });
 }
 
@@ -62,7 +63,8 @@ const PORT = process.env.PORT || 5000;
 const startServer = async () => {
   try {
     await connectDB();
-    app.listen(PORT, () => {
+    const host = process.env.HOST ?? '0.0.0.0';
+    app.listen(PORT, host, () => {
       console.log(`\n🚀 TaskFlow Server running on port ${PORT}`);
       console.log(`📡 API: http://localhost:${PORT}/api`);
       console.log(`🏥 Health: http://localhost:${PORT}/api/health\n`);

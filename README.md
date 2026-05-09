@@ -57,5 +57,12 @@ The application will be available at:
 ### 📦 Deployment
 This project is configured for **Railway** deployment. It uses a single service to serve both the API and the built frontend files.
 
-**Build Command:** `npm run railway-build`  
-**Start Command:** `npm start`
+From the Railway dashboard:
+
+- Deploy from the **repository root** (not `server/` or `client/`), which must contain `package.json`, `railway.json`, and `nixpacks.toml`.
+- **Build Command:** `npm run railway-build` (already set in `railway.json`).
+- **Start Command:** `npm start`.
+
+**Required variables** (Project → Variables): `MONGODB_URI`, `JWT_SECRET`. Optional: `JWT_EXPIRES_IN`, `HOST` (defaults to `0.0.0.0`).
+
+The server serves the Vite build from `client/dist` after a successful build. `NODE_ENV=production` is set for Nixpacks via `nixpacks.toml`; the backend also detects `client/dist` at runtime so the app still loads if a host omits `NODE_ENV`.
