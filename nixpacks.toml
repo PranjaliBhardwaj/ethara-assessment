@@ -1,0 +1,5 @@
+# Railway builds with Nixpacks when no Dockerfile is present.
+# Ensures Node runs in production mode for optimizations and predictable behavior.
+
+[variables]
+NODE_ENV = "production"
